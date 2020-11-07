@@ -6,6 +6,7 @@ This is a simple package to search https://publicwww.com, you need a valid key t
 Usage as command
 ================
 
+```console
 publicwww [-h] [-apikey APIKEY] [-query QUERY] [-snippets] [-output [OUTPUT]] action
 
 positional arguments:
@@ -33,7 +34,7 @@ publicwww search -query query -snippets
 For define filename to output, without -output it prints on terminal:
 publicwww search -query query -snippets -output (default results.csv)
 publicwww search -query query -snippets -output file_results.csv
-
+```
 
 SEARCH EXAMPLES
 ---------------
