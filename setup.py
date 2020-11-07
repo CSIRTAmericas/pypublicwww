@@ -6,13 +6,13 @@ DEPENDENCIES = open('requirements.txt', 'r').read().split('\n')
 
 setuptools.setup(
     name='pypublicwww',
-    version='1.0.0',
-    description='Python library and command-line utility for search in publicwww ',
+    version='0.0.2',
+    description="Python library and command-line utility for search in publicwww",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Einar Lanfranco',
-    author_email='einar.lanfranco@gmail.com',
     url='https://github.com/einar-lanfranco/publicwww',
+    author_email='einar.lanfranco@gmail.com',
     packages=['pypublicwww'],
     scripts=['pypublicwww/publicwww'],
     install_requires=DEPENDENCIES,
