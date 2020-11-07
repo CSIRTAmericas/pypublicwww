@@ -6,7 +6,7 @@ DEPENDENCIES = open('requirements.txt', 'r').read().split('\n')
 
 setuptools.setup(
     name='pypublicwww',
-    version='0.0.2',
+    version='0.0.3',
     description="Python library and command-line utility for search in publicwww",
     long_description=long_description,
     long_description_content_type="text/markdown",
