@@ -1,0 +1,90 @@
+#!/usr/bin/python3
+from pypublicwww import *
+from argparse import *
+import os
+import sys
+import click
+
+
+parser = ArgumentParser(formatter_class=RawTextHelpFormatter, epilog="""
+EXAMPLES:
+%(prog)s init -apikey 0123456789abcdef
+%(prog)s info
+%(prog)s search -query query
+For include snippets:
+%(prog)s search -query query -snippets
+For define filename to output, without -output it prints on terminal:
+%(prog)s search -query query -snippets -output (default results.csv)
+%(prog)s search -query query -snippets -output file_results.csv
+""")
+
+init_group = parser.add_argument_group('init arguments')
+init_group.add_argument("-apikey", dest="apikey",
+                    help="Set API KEY for init", required='init' in sys.argv)
+
+
+parser.add_argument('revs', metavar='action', choices=[
+                    "init", "info", "search"], help='Set action: %(choices)s')
+
+search_group = parser.add_argument_group('search arguments')
+query = search_group.add_argument("-query", dest="query", help="Enter query to be issue in publicwww",
+required='search' in sys.argv)
+snippets= search_group.add_argument("-snippets", action='store_true',help="Add snippet to results", default=False)
+output= search_group.add_argument("-output", nargs='?',default=None, const="result.csv",help="Output File",dest="output")
+#reportFromPathCSV
+args = parser.parse_args()
+
+PUBLICWWW_CONFIG_DIR = '~/.pypublicwww/'
+COLORIZE_FIELDS = {
+    'url': 'green',
+    'snippets': 'red',
+    'ranking': 'yellow'
+}
+
+publicwww_dir = os.path.expanduser(PUBLICWWW_CONFIG_DIR)
+
+def inits(apikey):
+    """Initialize the publicwww command-line"""
+    # Create the directory if necessary
+    if not os.path.isdir(publicwww_dir):
+        try:
+            os.mkdir(publicwww_dir)
+        except OSError:
+            raise click.ClickException(
+                'Unable to create directory to store the publicwww API key ({})'.format(publicwww_dir))
+
+    # Make sure it's a valid API key
+    apikey = apikey.strip()
+    try:
+        api = PyPublicWWW(apikey)
+        print('Account information:'+api.info())
+    except pypublicwww.UnauthorizedPublicwwwError as e:
+        raise click.ClickException(e.detail)
+
+    # Store the API key in the user's directory
+    keyfile = publicwww_dir + '/apikey'
+    with open(keyfile, 'w') as fout:
+        fout.write(apikey)
+    os.chmod(keyfile, 0o600)
+
+def getpypublicwww():
+    try:
+        apikey = open(publicwww_dir + '/apikey').read()
+    except:
+        print("Please use init first")
+        exit(2)
+    return PyPublicWWW(apikey)
+
+if (args.revs == "init"):
+    inits(args.apikey)
+else:
+    publicwww = getpypublicwww()
+    print('Account information:'+publicwww.info())
+    if (args.revs == "search"):
+        data=publicwww._search_websites(args.query, csv=True, snippets=args.snippets)
+        if (args.output):
+            f = open(args.output, "a")
+            f.write(data)
+            f.close()
+        else:
+            print(data)
